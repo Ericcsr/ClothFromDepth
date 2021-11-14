@@ -63,6 +63,9 @@ def step():
                 force += stiffness * relative_pos.normalized() * (
                     current_length - original_length) / original_length
         v[i] += force * dt
+    # May be need to add friction model is required
+    # May be just assume part of particles that are 
+    # attached to the gripper and have velocity directly controlled by gripper
     for i in ti.grouped(x):
         v[i] *= ti.exp(-damping * dt)
         if (x[i] - ball_center[0]).norm() <= ball_radius:
@@ -79,16 +82,22 @@ def set_vertices():
 init_scene()
 set_indices()
 
+'''
 window = ti.ui.Window("Cloth", (800, 800), vsync=True)
 canvas = window.get_canvas()
 scene = ti.ui.Scene()
 camera = ti.ui.make_camera()
-
-while window.running:
+'''
+import time
+last_t = time.time()
+cnt = 0
+while cnt < 1000:
     for i in range(30):
         step()
+    cnt += 1
+    '''
     set_vertices()
-
+    
     camera.position(0.5, -0.5, 2)
     camera.lookat(0.5, -0.5, 0)
     scene.set_camera(camera)
@@ -101,3 +110,5 @@ while window.running:
     scene.particles(ball_center, radius=ball_radius, color=(0.5, 0, 0))
     canvas.scene(scene)
     window.show()
+    '''
+print(f"Frame Rate: {1000/(time.time()-last_t)}")

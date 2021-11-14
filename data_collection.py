@@ -274,13 +274,18 @@ def pointcloud(out, verts, texcoords, color, painter=True):
 def get_num_id():
     files = os.listdir("./pointcloud_raw/scatters")
     num_ids = [int(f[4:-4]) for f in files]
-    max_num_id = max(num_ids)
+    if len(num_ids) != 0:
+        max_num_id = max(num_ids)
+    else:
+        max_num_id = -1
     return max_num_id + 1
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--exp_name", type=str,default="default")
 args = parser.parse_args()
 
+os.makedirs(f'./pointcloud_raw/trajs/{args.exp_name}',exist_ok=True)
+os.makedirs(f'./image_raw/trajs/{args.exp_name}', exist_ok=True)
 out = np.empty((h, w, 3), dtype=np.uint8)
 num_id = get_num_id()
 traj_cnt = 0
@@ -371,6 +376,8 @@ while True:
 
     if key == ord("e"):
         points.export_to_ply(f'./pointcloud_raw/scatters/out_{num_id}.ply', mapped_frame)
+        cv2.imwrite(f'./image_raw/scatters/out_{num_id}.jpg', color_source)
+        print("Scatter Saved")
         num_id += 1
 
     if key == ord('o'):
@@ -380,7 +387,9 @@ while True:
         record = False
     
     if record:
-        points.export_to_ply(f'./pointcloud_raw/trajs/{args.exp_name}/out_{traj_cnt}.ply')
+        points.export_to_ply(f'./pointcloud_raw/trajs/{args.exp_name}/out_{traj_cnt}.ply', mapped_frame)
+        cv2.imwrite(f'./image_raw/trajs/{args.exp_name}/out_{traj_cnt}.jpg', color_source)
+        print("Trajectory saved!")
         traj_cnt += 1
 
     if key in (27, ord("q")) or cv2.getWindowProperty(state.WIN_NAME, cv2.WND_PROP_AUTOSIZE) < 0:
