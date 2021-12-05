@@ -57,16 +57,16 @@ def step():
     for i in ti.grouped(x):
         v[i].y -= gravity * dt
     for i in ti.grouped(x):
-        force = ti.Vector([0.0, 0.0, 0.0])
+        #force = ti.Vector([0.0, 0.0, 0.0])
         for d in ti.static(links):
             j = min(max(i + d, 0), [N - 1, N - 1])
             relative_pos = x[j] - x[i]
             current_length = relative_pos.norm()
             original_length = cell_size * float(i - j).norm()
             if original_length != 0:
-                force += stiffness * relative_pos.normalized() * (
-                    current_length - original_length) / original_length
-        v[i] += force * dt
+                v[i] += stiffness * relative_pos.normalized() * (
+                    current_length - original_length) / original_length * dt
+        #v[i] += force * dt
     for i in ti.grouped(x):
         v[i] *= ti.exp(-damping * dt)
         if (x[i] - ball_center[0]).norm() <= ball_radius:
@@ -81,8 +81,8 @@ def set_vertices():
 
 
 init_scene()
-#set_indices()
-set_dum_indices()
+set_indices()
+#set_dum_indices()
 
 window = ti.ui.Window("Cloth", (800, 800), vsync=True)
 canvas = window.get_canvas()
@@ -99,7 +99,8 @@ while window.running:
     scene.set_camera(camera)
 
     scene.point_light(pos=(0.5, 1, 2), color=(1, 1, 1))
-    scene.particles(vertices, radius = 0.01, color=(0.5,0.5,0.5))
+    scene.mesh(vertices, indices=indices, color = (0.5,0.5,0.5), two_sided=True)
+    #scene.particles(vertices, radius = 0.01, color=(0.5,0.5,0.5))
     scene.particles(ball_center, radius=ball_radius, color=(0.5, 0, 0))
     canvas.scene(scene)
     window.show()
