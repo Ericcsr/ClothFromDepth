@@ -215,11 +215,4 @@ class ClothSim:
     def change_type_index(self,index, collision_type):
         assert(index < self.num_objects and (collision_type==1 or collision_type==2))
         self.balls_type[index] = collision_type
-        
-
-
-    
-        
-
-
     
